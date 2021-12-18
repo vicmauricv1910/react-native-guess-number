@@ -1,13 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
+import * as Font from "expo-font"; //expo install expo-font
+
 import Header from "./components/Header";
 import StartGameScreen from "./screens/StartGameScreen";
 import GameScreen from "./screens/GameScreen";
 import GameOverScreen from "./screens/GameOverScreen";
 
+const fetchFonts = () => {
+  return Font.loadAsync({
+    "open-sans": require("./assets/fonts/OpenSans-Regular.ttf"),
+    "open-sans-bold": require("./assets/fonts/OpenSans-Bold.ttf"),
+  });
+};
+
 export default function App() {
   const [userNumber, setUserNumber] = useState();
   const [guessRounds, setGuessRounds] = useState(0);
+  const [dataLoaded, setDataLoaded] = useState(false);
+
+  const getAsyncFonts = async () => {
+    await fetchFonts();
+    setDataLoaded(true);
+  };
+
+  useEffect(() => {
+    getAsyncFonts();
+  }, []);
 
   const configureNewGameHandler = () => {
     setGuessRounds(0);
@@ -39,11 +58,13 @@ export default function App() {
     );
   }
 
-  return (
+  return dataLoaded ? (
     <View style={styles.screen}>
       <Header title={"Guess a number"} />
       {content}
     </View>
+  ) : (
+    <View />
   );
 }
 
